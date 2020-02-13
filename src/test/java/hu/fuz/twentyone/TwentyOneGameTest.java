@@ -48,6 +48,14 @@ public class TwentyOneGameTest {
         assertThat(playerOneCards,is(twentyOneGame.getCardsOfPlayer(0)));
     }
 
+
+    @Test
+    public void getCardsValeOfPlayerOne(){
+        List<Card> playerOneCards = Arrays.asList(new Card(CardRank.KING), new Card(CardRank.ACE));
+        initGame(1,playerOneCards);
+        assertEquals(15,twentyOneGame.getCardsValueOfPlayer(0));
+    }
+
     private void initGame(int players, List<Card> cards) {
         Dealer<Card> dealer = new DealerForGetCardsOfPlayertest(cards);
         twentyOneGame.setDealer(dealer);

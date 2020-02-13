@@ -6,9 +6,15 @@ import java.util.*;
 
 public class TwentyOneGame {
 
+    private CardEvaluator cardEvaluator;
+
     private int players;
     private Dealer<Card> dealer;
     private Map<Integer,List<Card>> cardsOfPlayers;
+
+    public TwentyOneGame(){
+        this.cardEvaluator = new CardEvaluator();
+    }
 
     public int getPlayersCount() {
         return players;
@@ -44,5 +50,9 @@ public class TwentyOneGame {
         for (int i = 0; i < players; i++) {
             cardsOfPlayers.get(i).add(dealer.getNextCard());
         }
+    }
+
+    public int getCardsValueOfPlayer(int i) {
+         return cardsOfPlayers.get(i).stream().map(c -> cardEvaluator.evaluate(c)).reduce(0, Integer::sum);
     }
 }
