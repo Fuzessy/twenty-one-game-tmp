@@ -3,33 +3,31 @@ package hu.fuz.twentyone;
 import hu.fuz.twentyone.model.Card;
 import org.junit.Test;
 
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 
 public class TwentyOneGameTest {
-
-    @Test(expected = CardIsNullException.class)
-    public void nullCardTest(){
-        CardEvaluator cardEvaluator = new CardEvaluator();
-        cardEvaluator.evaluate(null);
-    }
-
-    @Test(expected = CardRankIsNullException.class)
-    public void nullRankOfCardTest(){
-        CardEvaluator cardEvaluator = new CardEvaluator();
-        cardEvaluator.evaluate(new Card(null));
+    @Test
+    public void startGameWithOnePlayerTest(){
+        TwentyOneGame twentyOneGame = new TwentyOneGame();
+        twentyOneGame.startGame(1);
+        assertEquals(1,twentyOneGame.getPlayersCount());
     }
 
     @Test
-    public void evaluateCardTest(){
-        CardEvaluator cardEvaluator = new CardEvaluator();
-        assertEquals(2,cardEvaluator.evaluate(new Card(CardRank.UNTER)));
-        assertEquals(3,cardEvaluator.evaluate(new Card(CardRank.OBER)));
-        assertEquals(4,cardEvaluator.evaluate(new Card(CardRank.KING)));
-        assertEquals(7,cardEvaluator.evaluate(new Card(CardRank.SEVEN)));
-        assertEquals(8,cardEvaluator.evaluate(new Card(CardRank.EIGHT)));
-        assertEquals(9,cardEvaluator.evaluate(new Card(CardRank.NINE)));
-        assertEquals(10,cardEvaluator.evaluate(new Card(CardRank.TEN)));
-        assertEquals(11,cardEvaluator.evaluate(new Card(CardRank.ACE)));
+    public void startGameWithThreePlayerTest(){
+        TwentyOneGame twentyOneGame = new TwentyOneGame();
+        twentyOneGame.startGame(3);
+        assertEquals(3,twentyOneGame.getPlayersCount());
+    }
+
+
+    @Test
+    public void getCardsOfPlayerTest(){
+        TwentyOneGame twentyOneGame = new TwentyOneGame();
+        twentyOneGame.startGame(3);
+        assertEquals(2,twentyOneGame.getCardsOfPlayer(2).size());
     }
 
 }
