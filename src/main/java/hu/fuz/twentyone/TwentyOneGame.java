@@ -3,6 +3,7 @@ package hu.fuz.twentyone;
 import hu.fuz.twentyone.model.Card;
 
 import java.util.*;
+import java.util.stream.IntStream;
 
 public class TwentyOneGame {
 
