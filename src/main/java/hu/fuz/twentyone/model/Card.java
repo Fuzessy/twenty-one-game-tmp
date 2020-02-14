@@ -26,4 +26,11 @@ public class Card {
     public int hashCode() {
         return Objects.hash(rank);
     }
+
+    @Override
+    public String toString() {
+        return "Card{" +
+                "rank=" + rank +
+                '}';
+    }
 }

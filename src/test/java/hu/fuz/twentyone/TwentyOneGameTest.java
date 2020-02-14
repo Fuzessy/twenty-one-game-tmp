@@ -48,12 +48,41 @@ public class TwentyOneGameTest {
         assertThat(playerOneCards,is(twentyOneGame.getCardsOfPlayer(0)));
     }
 
-
     @Test
-    public void getCardsValeOfPlayerOne(){
+    public void getCardsValueOfPlayerOneTest(){
         List<Card> playerOneCards = Arrays.asList(new Card(CardRank.KING), new Card(CardRank.ACE));
         initGame(1,playerOneCards);
         assertEquals(15,twentyOneGame.getCardsValueOfPlayer(0));
+    }
+
+    @Test
+    public void startGameAndGetActualGamerTest(){
+        initGame(1,Arrays.asList(
+                new Card(CardRank.OBER), new Card(CardRank.OBER)));
+
+        assertEquals(0,twentyOneGame.getActualPlayer());
+    }
+
+    @Test
+    public void actualPlayerDrawsCardTest(){
+        initGame(2,Arrays.asList(
+                new Card(CardRank.OBER), new Card(CardRank.SEVEN),
+                new Card(CardRank.EIGHT), new Card(CardRank.SEVEN),
+                new Card(CardRank.UNTER), new Card(CardRank.SEVEN)));
+
+        twentyOneGame.actualPlayerDrawsCard();
+
+        assertThat(Arrays.asList(
+                new Card(CardRank.OBER), new Card(CardRank.EIGHT),new Card(CardRank.UNTER)),
+                is(twentyOneGame.getCardsOfPlayer(0)));
+    }
+
+    @Test(expected = UserCantStopWhenHandValueUnder15Exception.class)
+    public void stopeGameUnder15Test(){
+        initGame(1,Arrays.asList(
+                new Card(CardRank.OBER), new Card(CardRank.OBER)));
+
+        twentyOneGame.stopActualPlayer();
     }
 
     private void initGame(int players, List<Card> cards) {

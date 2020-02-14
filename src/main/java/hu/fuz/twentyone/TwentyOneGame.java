@@ -3,7 +3,6 @@ package hu.fuz.twentyone;
 import hu.fuz.twentyone.model.Card;
 
 import java.util.*;
-import java.util.stream.IntStream;
 
 public class TwentyOneGame {
 
@@ -12,6 +11,7 @@ public class TwentyOneGame {
     private int players;
     private Dealer<Card> dealer;
     private Map<Integer,List<Card>> cardsOfPlayers;
+    private int actualPlayer;
 
     public TwentyOneGame(){
         this.cardEvaluator = new CardEvaluator();
@@ -38,6 +38,7 @@ public class TwentyOneGame {
         initCardsOfPlayer();
         dealToPlayers();
         dealToPlayers();
+        actualPlayer = 0;
     }
 
     private void initCardsOfPlayer() {
@@ -55,5 +56,19 @@ public class TwentyOneGame {
 
     public int getCardsValueOfPlayer(int i) {
          return cardsOfPlayers.get(i).stream().map(c -> cardEvaluator.evaluate(c)).reduce(0, Integer::sum);
+    }
+
+    public int getActualPlayer() {
+        return this.actualPlayer;
+    }
+
+    public void stopActualPlayer() {
+        if(getCardsValueOfPlayer(actualPlayer) < 15){
+            throw new UserCantStopWhenHandValueUnder15Exception();
+        }
+    }
+
+    public void actualPlayerDrawsCard() {
+        cardsOfPlayers.get(actualPlayer).add(dealer.getNextCard());
     }
 }
