@@ -11,6 +11,7 @@ public class TwentyOneGame {
     private int players;
     private Dealer<Card> dealer;
     private Map<Integer,List<Card>> cardsOfPlayers;
+    private Set<Integer> stoppedPlayers;
     private int actualPlayer;
 
     public TwentyOneGame(){
@@ -35,10 +36,15 @@ public class TwentyOneGame {
     }
 
     private void initGame() {
+        stoppedPlayers = new HashSet<>();
+        actualPlayer = 0;
+        initCardsAndDealStarter();
+    }
+
+    private void initCardsAndDealStarter() {
         initCardsOfPlayer();
         dealToPlayers();
         dealToPlayers();
-        actualPlayer = 0;
     }
 
     private void initCardsOfPlayer() {
@@ -66,6 +72,7 @@ public class TwentyOneGame {
         if(getCardsValueOfPlayer(actualPlayer) < 15){
             throw new UserCantStopWhenHandValueUnder15Exception();
         }
+        stoppedPlayers.add(actualPlayer);
     }
 
     public void actualPlayerDrawsCard() {
@@ -77,9 +84,18 @@ public class TwentyOneGame {
     }
 
     private void setNextPlayer() {
-        if(actualPlayer + 1 <= players)
-            actualPlayer++;
-        else
-            actualPlayer = 0;
+        int i = 0;
+        boolean nextPlayerFound;
+        int supposedNextPlayer = actualPlayer;
+        do{
+            supposedNextPlayer = getSupposedNextPlayer(supposedNextPlayer);
+            nextPlayerFound = !stoppedPlayers.contains(supposedNextPlayer);
+            i++;
+        }while(i < players && !nextPlayerFound);
+        actualPlayer = nextPlayerFound ? supposedNextPlayer : -1;
+    }
+
+    private int getSupposedNextPlayer(int supposedNextPlayer) {
+        return supposedNextPlayer+1 >= players ? 0 : supposedNextPlayer + 1;
     }
 }

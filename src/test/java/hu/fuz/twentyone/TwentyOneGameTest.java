@@ -119,9 +119,74 @@ public class TwentyOneGameTest {
         assertCardsOfPlayer(1, CardRank.SEVEN, CardRank.SEVEN,CardRank.UNTER);
     }
 
+    @Test
+    public void actualPlayerIsEmptyWhenAllPlayerStoppedTest(){
+        initGame(1, createCards(CardRank.TEN,CardRank.TEN));
+
+        twentyOneGame.stopActualPlayer();
+        twentyOneGame.playNext();
+
+        assertEquals(-1,twentyOneGame.getActualPlayer());
+    }
+
+    @Test
+    public void playWith3PlayersWhenFirstPlayerCallNextTest(){
+        initGame(3, createCards(
+                CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER));
+
+        twentyOneGame.playNext();
+        assertEquals(1,twentyOneGame.getActualPlayer());
+    }
+
+
+    @Test
+    public void playWith3PlayersWhenFirstAndSecondPlayerCallNextTest(){
+        initGame(3, createCards(
+                CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER));
+
+        twentyOneGame.playNext();
+        twentyOneGame.playNext();
+        assertEquals(2,twentyOneGame.getActualPlayer());
+    }
+
+    @Test
+    public void playWith3PlayersWhenFirstAndSecondAndThirdPlayerCallNextTest(){
+        initGame(3, createCards(
+                CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER));
+
+        twentyOneGame.playNext();
+        twentyOneGame.playNext();
+        twentyOneGame.playNext();
+        assertEquals(0,twentyOneGame.getActualPlayer());
+    }
+
+    @Test
+    public void playWith3PlayersWhenFirstAndSecondAndThirdPlayerCallNextAndStopTest(){
+        initGame(3, createCards(
+                CardRank.TEN,CardRank.TEN,CardRank.TEN,CardRank.TEN,CardRank.TEN,CardRank.TEN));
+
+        twentyOneGame.stopActualPlayer(); twentyOneGame.playNext();
+        twentyOneGame.stopActualPlayer(); twentyOneGame.playNext();
+        twentyOneGame.playNext();
+        assertEquals(2,twentyOneGame.getActualPlayer());
+    }
+
+    @Test
+    public void nextPlayerWith3PlayersTest(){
+        initGame(3, createCards(
+                CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER));
+
+        twentyOneGame.playNext();
+        assertEquals(1,twentyOneGame.getActualPlayer());
+    }
+
     private void assertCardsOfPlayer(int player, CardRank...ranks){
-        List<Card> cardsShouldBeInHand = Arrays.stream(ranks).map(Card::new).collect(Collectors.toList());
+        List<Card> cardsShouldBeInHand = createCards(ranks);
         assertThat(cardsShouldBeInHand, is(twentyOneGame.getCardsOfPlayer(player)));
+    }
+
+    private List<Card> createCards(CardRank...ranks) {
+        return Arrays.stream(ranks).map(Card::new).collect(Collectors.toList());
     }
 
     private void initGame(int players, List<Card> cards) {
