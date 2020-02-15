@@ -71,4 +71,15 @@ public class TwentyOneGame {
     public void actualPlayerDrawsCard() {
         cardsOfPlayers.get(actualPlayer).add(dealer.getNextCard());
     }
+
+    public void playNext() {
+        setNextPlayer();
+    }
+
+    private void setNextPlayer() {
+        if(actualPlayer + 1 <= players)
+            actualPlayer++;
+        else
+            actualPlayer = 0;
+    }
 }

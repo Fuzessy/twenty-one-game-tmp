@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
@@ -15,12 +16,18 @@ public class TwentyOneGameTest {
 
     private TwentyOneGame twentyOneGame;
     private List<Card> dummyCards;
+    private List<Card> oberSevenEightSevenUnterPack;
 
     @Before
     public void init(){
         twentyOneGame = new TwentyOneGame();
         dummyCards = Arrays.asList(new Card(CardRank.KING), new Card(CardRank.ACE), new Card(CardRank.KING)
                 , new Card(CardRank.SEVEN), new Card(CardRank.EIGHT), new Card(CardRank.TEN));
+
+        oberSevenEightSevenUnterPack = Arrays.asList(
+                new Card(CardRank.OBER), new Card(CardRank.SEVEN),
+                new Card(CardRank.EIGHT), new Card(CardRank.SEVEN),
+                new Card(CardRank.UNTER));
     }
 
     @Test
@@ -36,39 +43,28 @@ public class TwentyOneGameTest {
     }
 
     @Test
-    public void getSizeOfCardsOfPlayerTest(){
+    public void startGameAndGetCountOfCardsTest(){
         initGame(2,dummyCards);
         assertEquals(2,twentyOneGame.getCardsOfPlayer(1).size());
+        assertEquals(2,twentyOneGame.getCardsOfPlayer(0).size());
     }
 
     @Test
-    public void getCardsOfPlayerTest(){
-        List<Card> playerOneCards = Arrays.asList(new Card(CardRank.KING), new Card(CardRank.ACE));
-        initGame(1,playerOneCards);
-        assertThat(playerOneCards,is(twentyOneGame.getCardsOfPlayer(0)));
-    }
-
-    @Test
-    public void getCardsValueOfPlayerOneTest(){
-        List<Card> playerOneCards = Arrays.asList(new Card(CardRank.KING), new Card(CardRank.ACE));
-        initGame(1,playerOneCards);
-        assertEquals(15,twentyOneGame.getCardsValueOfPlayer(0));
+    public void startGameAndGetValueOfCardsTest(){
+        initGame(1,oberSevenEightSevenUnterPack);
+        assertEquals(10,twentyOneGame.getCardsValueOfPlayer(0));
     }
 
     @Test
     public void startGameAndGetActualGamerTest(){
-        initGame(1,Arrays.asList(
-                new Card(CardRank.OBER), new Card(CardRank.OBER)));
+        initGame(1,dummyCards);
 
         assertEquals(0,twentyOneGame.getActualPlayer());
     }
 
     @Test
-    public void actualPlayerDrawsCardTest(){
-        initGame(2,Arrays.asList(
-                new Card(CardRank.OBER), new Card(CardRank.SEVEN),
-                new Card(CardRank.EIGHT), new Card(CardRank.SEVEN),
-                new Card(CardRank.UNTER), new Card(CardRank.SEVEN)));
+    public void startGameAndActualPlayerDrawsCardTest(){
+        initGame(2, oberSevenEightSevenUnterPack);
 
         twentyOneGame.actualPlayerDrawsCard();
 
@@ -78,11 +74,54 @@ public class TwentyOneGameTest {
     }
 
     @Test(expected = UserCantStopWhenHandValueUnder15Exception.class)
-    public void stopeGameUnder15Test(){
-        initGame(1,Arrays.asList(
-                new Card(CardRank.OBER), new Card(CardRank.OBER)));
+    public void stopGameUnder15WhenCardValueIs10Test(){
+        initGame(1,oberSevenEightSevenUnterPack);
 
+        assertTrue(twentyOneGame.getCardsValueOfPlayer(0) <= 15);
         twentyOneGame.stopActualPlayer();
+    }
+
+    @Test(expected = UserCantStopWhenHandValueUnder15Exception.class)
+    public void stopGameUnder15WhenCardValueIs14Test(){
+        initGame(1,Arrays.asList(new Card(CardRank.TEN), new Card(CardRank.KING)));
+
+        assertTrue(twentyOneGame.getCardsValueOfPlayer(0) <= 15);
+        twentyOneGame.stopActualPlayer();
+    }
+
+    @Test
+    public void secondPlayersCardCheckTest(){
+        initGame(2, oberSevenEightSevenUnterPack);
+        twentyOneGame.actualPlayerDrawsCard();
+
+        twentyOneGame.playNext();
+
+        assertCardsOfPlayer(1,CardRank.SEVEN, CardRank.SEVEN);
+    }
+
+    @Test
+    public void playNextAndCheckActualPlayerTest(){
+        initGame(2, oberSevenEightSevenUnterPack);
+
+        twentyOneGame.playNext();
+
+        assertEquals(1,twentyOneGame.getActualPlayer());
+    }
+
+    @Test
+    public void playNextAndDrawCardTest(){
+        initGame(2, oberSevenEightSevenUnterPack);
+
+        twentyOneGame.playNext();
+        twentyOneGame.actualPlayerDrawsCard();
+
+        assertCardsOfPlayer(0, CardRank.OBER, CardRank.EIGHT);
+        assertCardsOfPlayer(1, CardRank.SEVEN, CardRank.SEVEN,CardRank.UNTER);
+    }
+
+    private void assertCardsOfPlayer(int player, CardRank...ranks){
+        List<Card> cardsShouldBeInHand = Arrays.stream(ranks).map(Card::new).collect(Collectors.toList());
+        assertThat(cardsShouldBeInHand, is(twentyOneGame.getCardsOfPlayer(player)));
     }
 
     private void initGame(int players, List<Card> cards) {
