@@ -82,8 +82,14 @@ public class TwentyOneGame {
     }
 
     public void actualPlayerDrawsCard() {
+        checkDrawsCard();
         cardsOfPlayers.get(actualPlayer).add(dealer.getNextCard());
         this.gameStatus = GameStatus.PLAYER_DROW_A_CARD;
+    }
+
+    private void checkDrawsCard() {
+        if( getCardsValueOfPlayer(actualPlayer) >= 21 )
+            throw new HandValueMoreThan21Exception();
     }
 
     public void playNext() {
@@ -93,7 +99,7 @@ public class TwentyOneGame {
 
     private void checkPlayNextStatus() {
         if(this.gameStatus != GameStatus.PLAYER_STOPPED && this.gameStatus != GameStatus.PLAYER_DROW_A_CARD){
-            throw new PlayerShouldStopOrDrawsCard();
+            throw new PlayerShouldStopOrDrawsCardException();
         }
     }
 
