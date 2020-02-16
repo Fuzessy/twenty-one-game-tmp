@@ -17,6 +17,7 @@ public class TwentyOneGameTest {
     private TwentyOneGame twentyOneGame;
     private List<Card> dummyCards;
     private List<Card> oberSevenEightSevenUnterPack;
+    private List<Card> dummyInvalidUnters;
 
     @Before
     public void init(){
@@ -28,6 +29,10 @@ public class TwentyOneGameTest {
                 new Card(CardRank.OBER), new Card(CardRank.SEVEN),
                 new Card(CardRank.EIGHT), new Card(CardRank.SEVEN),
                 new Card(CardRank.UNTER));
+
+        dummyInvalidUnters = createCards(CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,
+                CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,
+                CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER);
     }
 
     @Test
@@ -102,6 +107,7 @@ public class TwentyOneGameTest {
     @Test
     public void playNextAndCheckActualPlayerTest(){
         initGame(2, oberSevenEightSevenUnterPack);
+        twentyOneGame.actualPlayerDrawsCard();
 
         twentyOneGame.playNext();
 
@@ -112,11 +118,11 @@ public class TwentyOneGameTest {
     public void playNextAndDrawCardTest(){
         initGame(2, oberSevenEightSevenUnterPack);
 
-        twentyOneGame.playNext();
         twentyOneGame.actualPlayerDrawsCard();
+        twentyOneGame.playNext();
 
-        assertCardsOfPlayer(0, CardRank.OBER, CardRank.EIGHT);
-        assertCardsOfPlayer(1, CardRank.SEVEN, CardRank.SEVEN,CardRank.UNTER);
+        assertCardsOfPlayer(0, CardRank.OBER, CardRank.EIGHT, CardRank.UNTER);
+        assertCardsOfPlayer(1, CardRank.SEVEN, CardRank.SEVEN);
     }
 
     @Test
@@ -129,7 +135,7 @@ public class TwentyOneGameTest {
         assertEquals(-1,twentyOneGame.getActualPlayer());
     }
 
-    @Test
+    @Test(expected = PlayerShouldStopOrDrawsCard.class)
     public void playWith3PlayersWhenFirstPlayerCallNextTest(){
         initGame(3, createCards(
                 CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER));
@@ -141,42 +147,39 @@ public class TwentyOneGameTest {
 
     @Test
     public void playWith3PlayersWhenFirstAndSecondPlayerCallNextTest(){
-        initGame(3, createCards(
-                CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER));
+        initGame(3, dummyInvalidUnters);
 
-        twentyOneGame.playNext();
-        twentyOneGame.playNext();
+        twentyOneGame.actualPlayerDrawsCard();twentyOneGame.playNext();
+        twentyOneGame.actualPlayerDrawsCard();twentyOneGame.playNext();
         assertEquals(2,twentyOneGame.getActualPlayer());
     }
 
     @Test
     public void playWith3PlayersWhenFirstAndSecondAndThirdPlayerCallNextTest(){
-        initGame(3, createCards(
-                CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER));
+        initGame(3, dummyInvalidUnters);
 
-        twentyOneGame.playNext();
-        twentyOneGame.playNext();
-        twentyOneGame.playNext();
+        twentyOneGame.actualPlayerDrawsCard();twentyOneGame.playNext();
+        twentyOneGame.actualPlayerDrawsCard();twentyOneGame.playNext();
+        twentyOneGame.actualPlayerDrawsCard();twentyOneGame.playNext();
         assertEquals(0,twentyOneGame.getActualPlayer());
     }
 
     @Test
     public void playWith3PlayersWhenFirstAndSecondAndThirdPlayerCallNextAndStopTest(){
-        initGame(3, createCards(
-                CardRank.TEN,CardRank.TEN,CardRank.TEN,CardRank.TEN,CardRank.TEN,CardRank.TEN));
+        initGame(3, createCards(CardRank.TEN,CardRank.TEN,CardRank.TEN,CardRank.TEN,CardRank.TEN,CardRank.TEN,
+                CardRank.UNTER));
 
         twentyOneGame.stopActualPlayer(); twentyOneGame.playNext();
         twentyOneGame.stopActualPlayer(); twentyOneGame.playNext();
-        twentyOneGame.playNext();
+        twentyOneGame.actualPlayerDrawsCard(); twentyOneGame.playNext();
         assertEquals(2,twentyOneGame.getActualPlayer());
     }
 
     @Test
     public void nextPlayerWith3PlayersTest(){
-        initGame(3, createCards(
-                CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER));
+        initGame(3, dummyInvalidUnters);
 
-        twentyOneGame.playNext();
+        twentyOneGame.actualPlayerDrawsCard(); twentyOneGame.playNext();
         assertEquals(1,twentyOneGame.getActualPlayer());
     }
 

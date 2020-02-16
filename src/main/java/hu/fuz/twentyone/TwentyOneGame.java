@@ -13,6 +13,7 @@ public class TwentyOneGame {
     private Map<Integer,List<Card>> cardsOfPlayers;
     private Set<Integer> stoppedPlayers;
     private int actualPlayer;
+    private GameStatus gameStatus;
 
     public TwentyOneGame(){
         this.cardEvaluator = new CardEvaluator();
@@ -28,6 +29,10 @@ public class TwentyOneGame {
 
     public void setDealer(Dealer<Card> dealer) {
         this.dealer = dealer;
+    }
+
+    public boolean isPlayerStopped(int supposedNextPlayer) {
+        return !stoppedPlayers.contains(supposedNextPlayer);
     }
 
     public void startGame(int players) {
@@ -73,29 +78,38 @@ public class TwentyOneGame {
             throw new UserCantStopWhenHandValueUnder15Exception();
         }
         stoppedPlayers.add(actualPlayer);
+        gameStatus = GameStatus.PLAYER_STOPPED;
     }
 
     public void actualPlayerDrawsCard() {
         cardsOfPlayers.get(actualPlayer).add(dealer.getNextCard());
+        this.gameStatus = GameStatus.PLAYER_DROW_A_CARD;
     }
 
     public void playNext() {
+        checkPlayNextStatus();
         setNextPlayer();
+    }
+
+    private void checkPlayNextStatus() {
+        if(this.gameStatus != GameStatus.PLAYER_STOPPED && this.gameStatus != GameStatus.PLAYER_DROW_A_CARD){
+            throw new PlayerShouldStopOrDrawsCard();
+        }
     }
 
     private void setNextPlayer() {
         int i = 0;
         boolean nextPlayerFound;
-        int supposedNextPlayer = actualPlayer;
+        int suggestedNextPlayer = actualPlayer;
         do{
-            supposedNextPlayer = getSupposedNextPlayer(supposedNextPlayer);
-            nextPlayerFound = !stoppedPlayers.contains(supposedNextPlayer);
+            suggestedNextPlayer = getSuggestedNextPlayer(suggestedNextPlayer);
+            nextPlayerFound = isPlayerStopped(suggestedNextPlayer);
             i++;
         }while(i < players && !nextPlayerFound);
-        actualPlayer = nextPlayerFound ? supposedNextPlayer : -1;
+        actualPlayer = nextPlayerFound ? suggestedNextPlayer : -1;
     }
 
-    private int getSupposedNextPlayer(int supposedNextPlayer) {
-        return supposedNextPlayer+1 >= players ? 0 : supposedNextPlayer + 1;
+    private int getSuggestedNextPlayer(int playerIndex) {
+        return playerIndex+1 >= players ? 0 : playerIndex + 1;
     }
 }
