@@ -1,14 +1,13 @@
 package hu.fuz.twentyone;
 
-import hu.fuz.twentyone.model.Card;
-import org.junit.Before;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+
+import hu.fuz.twentyone.model.Card;
 
 public class TwentyOneGameTestUtils {
 

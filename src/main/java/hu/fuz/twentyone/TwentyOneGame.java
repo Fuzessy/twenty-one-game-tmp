@@ -1,8 +1,8 @@
 package hu.fuz.twentyone;
 
-import hu.fuz.twentyone.model.Card;
-
 import java.util.*;
+
+import hu.fuz.twentyone.model.Card;
 
 public class TwentyOneGame {
 
