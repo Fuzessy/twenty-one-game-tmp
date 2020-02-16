@@ -79,16 +79,6 @@ public class TwentyOneGameTest {
         utils.assertCardsOfPlayer(1, CardRank.SEVEN, CardRank.SEVEN);
     }
 
-    @Test
-    public void actualPlayerIsEmptyWhenAllPlayerStoppedTest(){
-        utils.initGame(1, utils.createCards(CardRank.TEN,CardRank.TEN));
-
-        twentyOneGame.stopActualPlayer();
-        twentyOneGame.playNext();
-
-        assertEquals(-1,twentyOneGame.getActualPlayer());
-    }
-
     @Test(expected = PlayerShouldStopOrDrawsCardException.class)
     public void playWith3PlayersWhenFirstPlayerCallNextTest(){
         utils.initGame(3, utils.createCards(
@@ -145,6 +135,15 @@ public class TwentyOneGameTest {
 
         twentyOneGame.actualPlayerDrawsCard(); twentyOneGame.playNext();
         twentyOneGame.actualPlayerDrawsCard();
+    }
+
+    @Test
+    public void allPlayerStopATest(){
+        utils.initGame(2, utils.getDummyInvalidTens());
+        twentyOneGame.stopActualPlayer(); twentyOneGame.playNext();
+        twentyOneGame.stopActualPlayer(); twentyOneGame.playNext();
+
+        assertEquals(-1,twentyOneGame.getActualPlayer());
     }
 
 }

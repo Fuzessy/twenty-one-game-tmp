@@ -16,6 +16,7 @@ public class TwentyOneGameTestUtils {
     private List<Card> dummyCards;
     private List<Card> oberSevenEightSevenUnterPack;
     private List<Card> dummyInvalidUnters;
+    private List<Card> dummyInvalidTens;
 
     public TwentyOneGameTestUtils(TwentyOneGame twentyOneGame) {
         this.twentyOneGame = twentyOneGame;
@@ -30,6 +31,10 @@ public class TwentyOneGameTestUtils {
         dummyInvalidUnters = createCards(CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER
                 ,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER
                 ,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER);
+
+        dummyInvalidTens = createCards(CardRank.TEN,CardRank.TEN,CardRank.TEN,CardRank.TEN,CardRank.TEN
+                ,CardRank.TEN,CardRank.TEN,CardRank.TEN,CardRank.TEN,CardRank.TEN,CardRank.TEN
+                ,CardRank.TEN,CardRank.TEN,CardRank.TEN,CardRank.TEN,CardRank.TEN,CardRank.TEN);
     }
 
 
@@ -58,6 +63,10 @@ public class TwentyOneGameTestUtils {
         Dealer<Card> dealer = new DealerForGetCardsOfPlayertest(cards);
         twentyOneGame.setDealer(dealer);
         twentyOneGame.startGame(players);
+    }
+
+    public List<Card> getDummyInvalidTens() {
+        return dummyInvalidTens;
     }
 
     private class DealerForGetCardsOfPlayertest implements Dealer<Card> {
