@@ -19,7 +19,7 @@ public class CardEvaluator {
             case TEN:   return 10;
             case ACE:   return 11;
         }
-        return null;
+        throw new InvalidCardRangeException();
     }
 
     private void checkCard(Card card) {
