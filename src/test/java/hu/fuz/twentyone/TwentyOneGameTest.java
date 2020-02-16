@@ -17,133 +17,131 @@ public class TwentyOneGameTest {
     private TwentyOneGameTestUtils utils;
 
     @Before
-    public void init(){
+    public void init() {
         twentyOneGame = new TwentyOneGame();
         utils = new TwentyOneGameTestUtils(twentyOneGame);
     }
+
     @Test
-    public void startGameAndActualPlayerDrawsCardTest(){
+    public void startGameAndActualPlayerDrawsCardTest() {
         utils.initGame(2, utils.getOberSevenEightSevenUnterPack());
 
         twentyOneGame.actualPlayerDrawsCard();
 
         assertThat(Arrays.asList(
-                new Card(CardRank.OBER), new Card(CardRank.EIGHT),new Card(CardRank.UNTER)),
+                new Card(CardRank.OBER), new Card(CardRank.EIGHT), new Card(CardRank.UNTER)),
                 is(twentyOneGame.getCardsOfPlayer(0)));
     }
 
     @Test(expected = UserCantStopWhenHandValueUnder15Exception.class)
-    public void stopGameUnder15WhenCardValueIs10Test(){
+    public void stopGameUnder15WhenCardValueIs10Test() {
         utils.initGame(1, utils.getOberSevenEightSevenUnterPack());
-
         assertTrue(twentyOneGame.getCardsValueOfPlayer(0) <= 15);
         twentyOneGame.stopActualPlayer();
     }
 
     @Test(expected = UserCantStopWhenHandValueUnder15Exception.class)
     public void stopGameUnder15WhenCardValueIs14Test(){
-        utils.initGame(1,Arrays.asList(new Card(CardRank.TEN), new Card(CardRank.KING)));
+        utils.initGame(1, utils.getDummyInvalidUnters());
 
         assertTrue(twentyOneGame.getCardsValueOfPlayer(0) <= 15);
         twentyOneGame.stopActualPlayer();
     }
 
     @Test
-    public void secondPlayersCardCheckTest(){
+    public void secondPlayersCardCheckTest() {
         utils.initGame(2, utils.getOberSevenEightSevenUnterPack());
-        twentyOneGame.actualPlayerDrawsCard();
+        utils.drawsCardAndPlayNext(1);
 
-        twentyOneGame.playNext();
-
-        utils.assertCardsOfPlayer(1,CardRank.SEVEN, CardRank.SEVEN);
+        utils.assertCardsOfPlayer(1, CardRank.SEVEN, CardRank.SEVEN);
     }
 
     @Test
-    public void playNextAndCheckActualPlayerTest(){
+    public void playNextAndCheckActualPlayerTest() {
         utils.initGame(2, utils.getOberSevenEightSevenUnterPack());
-        twentyOneGame.actualPlayerDrawsCard();
+        utils.drawsCardAndPlayNext(1);
 
-        twentyOneGame.playNext();
-
-        assertEquals(1,twentyOneGame.getActualPlayer());
+        assertEquals(1, twentyOneGame.getActualPlayer());
     }
 
     @Test
-    public void playNextAndDrawCardTest(){
+    public void playNextAndDrawCardTest() {
         utils.initGame(2, utils.getOberSevenEightSevenUnterPack());
 
-        twentyOneGame.actualPlayerDrawsCard();
-        twentyOneGame.playNext();
+        utils.drawsCardAndPlayNext(1);
 
         utils.assertCardsOfPlayer(0, CardRank.OBER, CardRank.EIGHT, CardRank.UNTER);
         utils.assertCardsOfPlayer(1, CardRank.SEVEN, CardRank.SEVEN);
     }
 
     @Test(expected = PlayerShouldStopOrDrawsCardException.class)
-    public void playWith3PlayersWhenFirstPlayerCallNextTest(){
-        utils.initGame(3, utils.createCards(
-                CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER,CardRank.UNTER));
+    public void playWith3PlayersWhenFirstPlayerCallNextTest() {
+        utils.initGame(3, utils.getDummyInvalidUnters());
 
         twentyOneGame.playNext();
-        assertEquals(1,twentyOneGame.getActualPlayer());
+        assertEquals(1, twentyOneGame.getActualPlayer());
     }
 
 
     @Test
-    public void playWith3PlayersWhenFirstAndSecondPlayerCallNextTest(){
+    public void playWith3PlayersWhenFirstAndSecondPlayerCallNextTest() {
         utils.initGame(3, utils.getDummyInvalidUnters());
 
-        twentyOneGame.actualPlayerDrawsCard();twentyOneGame.playNext();
-        twentyOneGame.actualPlayerDrawsCard();twentyOneGame.playNext();
-        assertEquals(2,twentyOneGame.getActualPlayer());
+        utils.drawsCardAndPlayNext(2);
+
+        assertEquals(2, twentyOneGame.getActualPlayer());
     }
 
     @Test
-    public void playWith3PlayersWhenFirstAndSecondAndThirdPlayerCallNextTest(){
+    public void playWith3PlayersWhenFirstAndSecondAndThirdPlayerCallNextTest() {
         utils.initGame(3, utils.getDummyInvalidUnters());
 
-        twentyOneGame.actualPlayerDrawsCard();twentyOneGame.playNext();
-        twentyOneGame.actualPlayerDrawsCard();twentyOneGame.playNext();
-        twentyOneGame.actualPlayerDrawsCard();twentyOneGame.playNext();
-        assertEquals(0,twentyOneGame.getActualPlayer());
+        utils.drawsCardAndPlayNext(3);
+
+        assertEquals(0, twentyOneGame.getActualPlayer());
     }
 
     @Test
-    public void playWith3PlayersWhenFirstAndSecondAndThirdPlayerCallNextAndStopTest(){
-        utils.initGame(3, utils.createCards(CardRank.TEN,CardRank.TEN,CardRank.TEN,CardRank.TEN,CardRank.TEN,CardRank.TEN,
-                CardRank.UNTER));
+    public void playWith3PlayersWhenFirstAndSecondAndThirdPlayerCallNextAndStopTest() {
+        utils.initGame(3, utils.getDummyInvalidTens());
+        twentyOneGame.stopActualPlayer();
+        twentyOneGame.playNext();
+        twentyOneGame.stopActualPlayer();
+        twentyOneGame.playNext();
 
-        twentyOneGame.stopActualPlayer(); twentyOneGame.playNext();
-        twentyOneGame.stopActualPlayer(); twentyOneGame.playNext();
-        twentyOneGame.actualPlayerDrawsCard(); twentyOneGame.playNext();
-        assertEquals(2,twentyOneGame.getActualPlayer());
+        utils.drawsCardAndPlayNext(1);
+
+        assertEquals(2, twentyOneGame.getActualPlayer());
     }
 
     @Test
-    public void nextPlayerWith3PlayersTest(){
+    public void nextPlayerWith3PlayersTest() {
         utils.initGame(3, utils.getDummyInvalidUnters());
 
-        twentyOneGame.actualPlayerDrawsCard(); twentyOneGame.playNext();
-        assertEquals(1,twentyOneGame.getActualPlayer());
+        utils.drawsCardAndPlayNext(1);
+
+        assertEquals(1, twentyOneGame.getActualPlayer());
     }
 
     @Test(expected = HandValueMoreThan21Exception.class)
-    public void playerDrawCardWhenHandValueMoreThen21(){
-        List<Card> dummyInvalidTens = utils.createCards(CardRank.TEN,CardRank.TEN,CardRank.TEN,CardRank.TEN,CardRank.TEN
-                ,CardRank.TEN,CardRank.TEN,CardRank.TEN,CardRank.TEN,CardRank.TEN,CardRank.TEN);
-        utils.initGame(1, dummyInvalidTens);
+    public void playerDrawCardWhenHandValueMoreThen21() {
+        utils.initGame(1, utils.getDummyInvalidTens());
 
-        twentyOneGame.actualPlayerDrawsCard(); twentyOneGame.playNext();
+        utils.drawsCardAndPlayNext(1);
+
         twentyOneGame.actualPlayerDrawsCard();
     }
 
     @Test
-    public void allPlayerStopATest(){
+    public void allPlayerStopATest() {
         utils.initGame(2, utils.getDummyInvalidTens());
-        twentyOneGame.stopActualPlayer(); twentyOneGame.playNext();
-        twentyOneGame.stopActualPlayer(); twentyOneGame.playNext();
 
-        assertEquals(-1,twentyOneGame.getActualPlayer());
+        twentyOneGame.stopActualPlayer();
+        twentyOneGame.playNext();
+        twentyOneGame.stopActualPlayer();
+        twentyOneGame.playNext();
+
+        assertEquals(-1, twentyOneGame.getActualPlayer());
     }
 
 }

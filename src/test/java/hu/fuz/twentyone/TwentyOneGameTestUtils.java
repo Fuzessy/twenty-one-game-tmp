@@ -69,6 +69,13 @@ public class TwentyOneGameTestUtils {
         return dummyInvalidTens;
     }
 
+    public void drawsCardAndPlayNext(int repeatNumber) {
+        for (int i = 0; i < repeatNumber; i++) {
+            twentyOneGame.actualPlayerDrawsCard();
+            twentyOneGame.playNext();
+        }
+    }
+
     private class DealerForGetCardsOfPlayertest implements Dealer<Card> {
         private final List<Card> cards;
         private int counter = -1;
